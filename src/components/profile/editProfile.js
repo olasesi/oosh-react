@@ -1,13 +1,53 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import cv2 from '../../assets/cv1.jpg'
 import cvdp from '../../assets/dpcv.png'
-
+import Swal from 'sweetalert2';
+ import axios from 'axios';
 
 
 
 export const EditProfile = (props) => {
+    const [id, setId] = useState(useParams().id)
+
 
     let { showEditProfile } = props;
+
+    useEffect(() => { 
+    axios.get('sanctum/csrf-cookie').then(async () =>{
+        axios.get(`api/save-edit-profile/${id}`)
+          .then(function (response) {
+              if(response.data.status === 200){
+                
+                  Swal.fire({
+                    icon: 'success',
+                    title: response.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+        
+               
+              }
+           
+          
+          })
+          .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'An Error Occured!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+         
+          });
+        });
+        
+    }, [])
+
+
+
+
 
     return (
         <>

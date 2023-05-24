@@ -34,6 +34,11 @@ axios.defaults.headers.post["Content-Type"] = 'application/json';
 axios.defaults.headers.post["Accept"] = 'application/json';
 axios.defaults.withCredentials = true;
 
+axios.interceptors.request.use(function(config){
+  const token = localStorage.getItem('auth_token');
+  config.headers.Authorization = token ? `Bearer ${token}` : '';
+  return config
+});
 
 function App() {
   return (
@@ -45,8 +50,16 @@ function App() {
         {
           matches => matches ? (
             <Routes>
+
               <Route path="/" element={<SignUp />}></Route>
               <Route path="login" element={<Login />}></Route>
+<Route path="/login">
+  {localStorage.getItem('auth_token') ? <Navigate to='/' /> : <Login />}
+</Route>
+<Route path="/">
+  {localStorage.getItem('auth_token') ? <Navigate to='/' /> : <SignUp />}
+</Route>
+
               <Route path="forgot-password" element={<ForgotPassword />}></Route>
               <Route path="check-mail" element={<CheckEmail />}></Route>
 
