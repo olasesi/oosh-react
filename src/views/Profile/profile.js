@@ -45,8 +45,8 @@ export const Profile = () => {
 
                     <div className='mt-5 px-5 md:px-10 flex justify-between'>
                         <div>
-                            <h1 className='text-2xl font-bold'>David Adedamola </h1>
-                            <p className='font-semibold'>Graphic Designer</p>
+                            <h1 className='text-2xl font-bold'>{localStorage.getItem('auth_firstname')} {localStorage.getItem('auth_lastname')}</h1>
+                            <p className='font-semibold'>{localStorage.getItem('auth_occupation')}</p>
                         </div>
 
                         <div className='space-x-2'>
@@ -76,11 +76,11 @@ export const Profile = () => {
 
                             <div className='flex gap-3 items-center'>
                                 <p> <i class="fa-solid fa-globe text-orange-600"></i></p>
-                                <p className='font-semibold'>www.lilmow.com</p>
+                                <p className='font-semibold'>{localStorage.getItem('auth_website')}</p>
                             </div>
                             <div className='flex gap-3 items-center'>
-                                <p> <i class="fa-solid fa-circle-user text-orange-600"></i></p>
-                                <p className='font-semibold'>Male</p>
+                            <p> <i class="fa-solid fa-circle-user text-orange-600"></i></p>
+                                <p className='font-semibold'>{localStorage.getItem('auth_gender')}</p>
                             </div>
 
                             <div className='flex gap-3 items-center'>
@@ -89,7 +89,7 @@ export const Profile = () => {
                             </div>
                             <div className='flex gap-3 items-center'>
                                 <p> <i class="fa-solid fa-location-dot text-orange-600"></i></p>
-                                <p className='font-semibold'>VI, Nigeria</p>
+                                <p className='font-semibold'>{localStorage.getItem('auth_location')}</p>
                             </div>
 
                             <p className='font-semibold'>100,677 Followers</p>

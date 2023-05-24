@@ -16,7 +16,7 @@ export const CheckEmail = () => {
                             <div>
                                 <div className='my-6'>
                                     <h2 className='text-4xl font-bold text-center'>Check your email</h2>
-                                    <p className='text-lg font-medium text-center'>We have sent a link to your email address: <span className="text-blue-700">lilmow10@gmail.com</span> </p>
+                                    <p className='text-lg font-medium text-center'>We have sent a link to your email address: <span className="text-blue-700">{localStorage.getItem('new_registration')}</span> </p>
                                 </div>
 
                                 <div className='space-y-3'>

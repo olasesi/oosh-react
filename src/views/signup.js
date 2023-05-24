@@ -1,127 +1,108 @@
 import React, {useState, useEffect} from 'react';
  import logo from '../assets/logo.png'
- import { Link } from 'react-router-dom';
+ import { Link, useNavigate } from 'react-router-dom';
  import Swal from 'sweetalert2';
  import axios from 'axios';
 
-
-
-const validatedInputs = 
-    {
-        firstname: '',
-        email: '',
-        password: '',
-        lastname:'',
-        
-      }
-
-
+ 
 
 export default function SignUp() {
-    const initialValues = {firstname:"", email: "", password:"", password_confirmation:"", lastname:"", gender:"", date_of_birth:""};
-    const [formValues, setFormValues] = useState(initialValues);
-    const [formErrors, setFormErrors] = useState({});
-    const [isSubmit, setIsSubmit] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+
+    const navigate = useNavigate();
+
+    const [inputFields, setInputFields] = useState({firstname:"",lastname:"", email: "", password:"", password_confirmation:"", gender:null, date_of_birth:null});
+    const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
 
     const handleChange = (e) =>{
-        console.log(e.target);
         const{name , value} = e.target;
-        setFormValues({...formValues, [name]: value});  //Fix what gender and date here. It should fill it up also
+        setInputFields({...inputFields, [name]: value});  
+        //Fix what gender and date here. It should fill it up also
+    }
+
+    const validate =(inputValues)=>{
+        let errors = {};
+        const regex =  /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
         
+        if (inputValues.firstname.length < 3){
+            errors.firstname = "Firstname should not be less than 3 characters";
+        }
+
+        if (inputValues.lastname.length < 3){
+           
+            errors.lastname = "Lastname should not be less than 3 characters";
+        }
+        if(!regex.test(inputValues.email)){
+            errors.email = "Enter a valid email address";
+        }
+
+        if(inputValues.password.length < 6){
+            errors.password= "Password should not be less than 6 characters";
+        }else{
+            if(inputValues.password !== inputValues.password_confirmation){
+                errors.password= "Password did not match";
+            }
+        }
+        
+
+        return errors;
     }
 
     useEffect(() => {
-       if(Object.keys(formErrors).length === 0 && isSubmit){
-        }
-    }, [])
-
-  
-    const validate =(values)=>{
-        const errors = {};
-        const regex =  /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-        
-        if (!values.firstname ){
-            errors.firstname = "Firstname is required";
-        }else{
-            validatedInputs.firstname = values.firstname;
-        }
-
-        if (!values.lastname ){
-            errors.lastname = "Lastname is required";
-        }else{
-            validatedInputs.lastname = values.lastname;
-        }
-
-        if(!values.email){
-            errors.email= "Email is required!";
-        }else if(!regex.test(values.email)){
-            errors.email = "This is not a valid email address";
-        }else{
-            validatedInputs.email = values.email;
-        }
-
-        if(!values.password){
-            errors.password= "Password is required!";
-        } else if(values.password < 7){
-            errors.password = "Password must be less that 6 characters";
-        } 
-        if(!values.password_confirmation){
-            errors.password= "Confirm password!";
-        } else if(values.password_confirmation < 7){
-            errors.password = "Password must be less that 6 characters";
-        } 
-        
+       if(Object.keys(errors).length === 0 && submitting){
+        finishSubmit();
     }
+    }, [errors])
 
 const handleSubmit = (e) => {
-    console.log(formValues)
     e.preventDefault();
-    setFormErrors(validate(formValues));
-    setIsSubmit(true);
+    setErrors(validate(inputFields));
+    setSubmitting(true);
+ }
+
+ const finishSubmit = () => {
     
-
+setIsLoading(true);
 axios.get('sanctum/csrf-cookie').then(async () =>{
-        axios.post('api/save-register', {
-            firstname:formValues.firstname,
-            lastname:formValues.lastname,
-            email:formValues.email,
-            password:validatedInputs.password,
-            })
-          .then(function (response) {
-              if(response.data.status === 200){
-                  localStorage.setItem('auth_token',response.data.token);
-                  localStorage.setItem('auth_firstname',response.data.firstname);
-                  localStorage.setItem('auth_lastname',response.data.lastname);
-                  localStorage.setItem('auth_email',response.data.email);
+axios.post('api/save-register', inputFields)
+  .then(function (response) {
+      if(response.data.status === 200){
 
-                  Swal.fire({
-                    icon: 'success',
-                    title: response.data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-              }
-           
-          
-          })
-          .catch(function (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'An Error Occured!',
-                showConfirmButton: false,
-                timer: 1500
-            })
-         
-          });
+        //   localStorage.setItem('auth_token',response.data.token);
+        //   localStorage.setItem('auth_firstname',response.data.firstname);
+        //   localStorage.setItem('auth_lastname',response.data.lastname);
+          localStorage.setItem('new_registration',response.data.email);
+          setIsLoading(false)
+          Swal.fire({
+            icon: 'success',
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500
+        })
+
+        navigate('check-mail');
+      }
+   
+  
+  })
+  .catch(function (error) {
+    setIsLoading(false);
+    Swal.fire({
+        icon: 'error',
+        title: 'An Error Occured!',
+        showConfirmButton: false,
+        timer: 1500
+    })
+ 
+  });
 });
 
-   
-  }
-
-  
+  };
     
     return (
              <main className=''>
+             
                  <div className='bg-white py-12'>
                      <div className='w-full lg:w-5/6 2xl:w-1/2 lg:mx-auto lg:p-12'>
                          <img src={logo} className="w-20 mx-auto" alt='img' />
@@ -134,19 +115,19 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                              <div>
                                  
                                      <form onSubmit={handleSubmit}>
-                                     {/* {Object.keys(formErrors).length === 0 && isSubmit ? <p>Successful</p>: <p>Unsuccessful</p>}  */}
+                                    
                                          <div className='space-y-5'>
                                              <div>
                                                  <label className="block text-sm">
                                                      <input
-                                                    value={formValues.email}
+                                                    value={inputFields.email}
                                                     onChange={handleChange}
                                                          name="email"
                                                          className="block w-full mt-1 border p-3  text-base font-medium focus:border-slate-700 focus:outline-none focus:shadow-outline-purple shadow shadow-slate-100 rounded-md"
                                                          placeholder="Enter Email"
                                                      />
                                                      
-                <span className='text-red-500'>{formErrors.email}</span>
+                <span className='text-red-500'>{errors.email}</span>
                                                      
                                                  </label>
                                              </div>
@@ -155,7 +136,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                  <div className='w-full lg:w-1/2'>
                                                      <label className="block text-sm">
                                                          <input
-                                                           value={formValues.firstname}
+                                                           value={inputFields.firstname}
                                                            onChange={handleChange}
                                                              type="text"
                                                              name="firstname"
@@ -163,7 +144,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                              placeholder="First Name"
                                                          />
                                                        
-                                                        <span className='text-red-500'>{formErrors.firstname}</span>
+                                                        <span className='text-red-500'>{errors.firstname}</span>
                                                          
                                                      </label>
                                                  </div>
@@ -171,7 +152,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                  <div className='w-full lg:w-1/2'>
                                                      <label className="block text-sm">
                                                          <input
-                                                          value={formValues.lastname}
+                                                          value={inputFields.lastname}
                                                           onChange={handleChange}
                                                              type="text"
                                                              name="lastname"
@@ -179,7 +160,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                              placeholder="Last Name"
                                                          />
                                                           
-                                                        <span className='text-red-500'>{formErrors.lastname}</span>
+                                                        <span className='text-red-500'>{errors.lastname}</span>
                                                          
                                                      </label>
                                                  </div>
@@ -193,7 +174,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                      </svg>
                                                  </div>
                                                  <label className="block text-sm">
-                                                     <input value={formValues.password}
+                                                     <input value={inputFields.password}
             onChange={handleChange}
                                                          type="password"
                                                          name="password"
@@ -201,7 +182,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                          placeholder="Password"
                                                      />
 
-                                                        <span className='text-red-500'>{formErrors.password}</span>
+                                                        <span className='text-red-500'>{errors.password}</span>
 
                                                    
                                                  </label>
@@ -217,7 +198,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                  </div>
                                                  <label className="block text-sm">
                                                      <input
-                                                      value={formValues.password_confirmation}
+                                                      value={inputFields.password_confirmation}
                                                       onChange={handleChange}
                                                          type="password"
                                                          name="password_confirmation"
@@ -225,7 +206,7 @@ axios.get('sanctum/csrf-cookie').then(async () =>{
                                                          placeholder="Confirm Password"
                                                      />
                                                     
-                                                        <span className='text-red-500'>{formErrors.password_confirmation}</span>
+                                                        <span className='text-red-500'>{errors.password_confirmation}</span>
                                                  </label>
                                              </div>
 

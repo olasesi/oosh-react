@@ -5,6 +5,8 @@ import { Theme } from "../../components/dashboard/theme";
 import dp from '../../assets/dp.png'
 import { Activity } from "./activity";
 import { ActiveChats } from "./activeChats";
+import { addPointerEvent } from "framer-motion";
+import { data } from "autoprefixer";
 
 
 
@@ -33,6 +35,22 @@ export const DashHeader = () => {
     const navigate = useNavigate()
 
 
+    const logoutSubmit = (e) =>{
+    e.preventDefault();
+
+    // Get to the API to delete
+    // and then you remove the localstore data
+    // localStorage.removeItem('and the name of the item')
+    // and then redirect
+
+    }
+
+// var AuthButtons = '';
+// if(!localStorage.getItem('auth_token')){
+//     AuthButtons = (
+
+//     )
+// }
 
 
     return (
@@ -209,7 +227,7 @@ export const DashHeader = () => {
 
 
                                 <div className="">
-                                    <NavLink to="/" onClick={toggleNav} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
+                                    <NavLink onClick={logoutSubmit} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
                                         <svg
                                             className="w-5 h-5"
                                             aria-hidden="true"
@@ -276,14 +294,14 @@ export const DashHeader = () => {
                                     <div className="relative">
                                         <button onClick={toggleProfile} className="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
 
-                                            <img className="object-cover w-8 h-8 rounded-full" src={dp} alt="" aria-hidden="true" />
+                                            <img className="object-cover w-8 h-8 rounded-full" src={localStorage.getItem('profile_picture')} alt={localStorage.getItem('auth_username')} aria-hidden="true" />
 
                                         </button>
                                     </div>
                                 </div>
 
                             </div>
-
+                            
                         </header>
 
                         {/* main display */}
