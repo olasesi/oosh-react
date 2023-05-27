@@ -2,12 +2,14 @@ import './App.css';
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-import { Navigate, Route, Routes } from 'react-router-dom';
+import React from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import  SignUp  from './views/signup';
 import Login from './views/login';
 import { ForgotPassword } from './views/forgotpassword';
 import { CheckEmail } from './views/checkemail';
+import { SignupConfirmed } from './views/signupconfirmed';
+import  PasswordResetForm  from './views/passwordresetform';
 import { DashHeader } from './views/dashboard/dashhome';
 import { Errorpage } from './404';
 import { Notification } from './views/dashboard/notification';
@@ -41,6 +43,7 @@ axios.interceptors.request.use(function(config){
 });
 
 function App() {
+  const navigate = useNavigate();
   return (
     <>
 
@@ -51,18 +54,21 @@ function App() {
           matches => matches ? (
             <Routes>
 
-              <Route path="/" element={<SignUp />}></Route>
-              <Route path="login" element={<Login />}></Route>
-<Route path="/login">
-  {localStorage.getItem('auth_token') ? <Navigate to='/' /> : <Login />}
-</Route>
-<Route path="/">
-  {localStorage.getItem('auth_token') ? <Navigate to='/' /> : <SignUp />}
-</Route>
+              {/* <Route path="/" element={<SignUp />}></Route>
+              <Route path="login" element={<Login />}></Route> */}
+            <Route path="/login">
+              {localStorage.getItem('auth_token') ? <Navigate to='dashboard' /> : <Login />}
+            </Route>
+            <Route path="/">
+              {localStorage.getItem('auth_token') ? <Navigate to='dashboard' /> : <SignUp />}
+            </Route>
 
               <Route path="forgot-password" element={<ForgotPassword />}></Route>
               <Route path="check-mail" element={<CheckEmail />}></Route>
-
+              <Route path="signup-confirmed" element={<SignupConfirmed />}></Route>
+              <Route path="password-reset-form" element={<PasswordResetForm />}></Route>
+              
+              
               <Route path="/dashboard" element={<DashHeader />}>
                 <Route index element={<Dashboard />}></Route>
                 <Route path="notification" element={<Notification />}></Route>
@@ -88,10 +94,20 @@ function App() {
           ) : (
 
             <Routes>
-              <Route path="/" element={<SignUp />}></Route>
-              <Route path="login" element={<Login />}></Route>
+ <Route path="/login">
+              {localStorage.getItem('auth_token') ? <Navigate to='/dashboard' /> : <Login />}
+            </Route>
+            <Route path="/">
+              {localStorage.getItem('auth_token') ? <Navigate to='/dashboard' /> : <SignUp />}
+            </Route>
+
+              {/* <Route path="/" element={<SignUp />}></Route>
+              <Route path="login" element={<Login />}></Route> */}
               <Route path="forgot-password" element={<ForgotPassword />}></Route>
               <Route path="check-mail" element={<CheckEmail />}></Route>
+
+              <Route path="signup-confirmed" element={<SignupConfirmed />}></Route>
+              <Route path="password-reset-form" element={<PasswordResetForm />}></Route>
 
               <Route path="/dashboard" element={<DashHeader />}>
                 <Route index element={<Dashboard />}></Route>

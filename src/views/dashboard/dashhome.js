@@ -7,11 +7,12 @@ import { Activity } from "./activity";
 import { ActiveChats } from "./activeChats";
 import { addPointerEvent } from "framer-motion";
 import { data } from "autoprefixer";
-
+import Swal from 'sweetalert2';
+ import axios from 'axios';
 
 
 export const DashHeader = () => {
-
+    const navigate = useNavigate();
 
 
     const [mobileNav, setMobileNav] = useState(false);
@@ -32,16 +33,43 @@ export const DashHeader = () => {
     }
 
 
-    const navigate = useNavigate()
+    
 
 
     const logoutSubmit = (e) =>{
     e.preventDefault();
 
-    // Get to the API to delete
-    // and then you remove the localstore data
-    // localStorage.removeItem('and the name of the item')
-    // and then redirect
+    axios.get('sanctum/csrf-cookie').then(async () =>{
+        axios.post('api/logout')
+        .then(function (response) {
+           if(response.data.status === 200){
+           
+            localStorage.removeItem('auth_token',response.data.token);
+            localStorage.removeItem('auth_email',response.data.email);
+              
+               
+               Swal.fire({
+                 icon: 'success',
+                 title: response.data.message,
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+           }
+        
+           navigate('/login');
+        
+        })
+        .catch(function (error) {
+         Swal.fire({
+             icon: 'error',
+             title: 'An Error Occured!',
+             showConfirmButton: false,
+             timer: 1500
+         })
+        
+        });
+        });
+    
 
     }
 
