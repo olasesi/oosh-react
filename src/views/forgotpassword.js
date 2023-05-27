@@ -1,42 +1,85 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import logo from '../assets/logo.png'
-import { Formik, Form, Field, ErrorMessage } from "formik";   //to make use of formik to handle the form creation for the posts
-import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
 
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 
 export const ForgotPassword = () => {
 
-    //creating  intialvalues for formik
-    const intialValues = {
-        email: "",
+    const [inputFields, setInputFields] = useState({ email: ""});
+    const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleChange = (e) =>{
+        const{name , value} = e.target;
+        setInputFields({...inputFields, [name]: value});  
+        
+    }
+ 
+    const validate =(inputValues)=>{
+        let errors = {};
+        const regex =  /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        
+        if(!regex.test(inputValues.email)){
+            errors.email = "Enter a valid email address";
+        }
+
+        return errors;
     }
 
+    useEffect(() => {
+       if(Object.keys(errors).length === 0 && submitting){
+        finishSubmit();
+    }
+    }, [errors])
 
-    //validationSchema--- to integrate validations on the form using Yup
-    const validationSchema = Yup.object().shape({
-        email: Yup.string().email('Invalid email').required('Email is required'),
-    })
+const handleSubmit = (e) => {
+    e.preventDefault();
+    setErrors(validate(inputFields));
+    setSubmitting(true);
+ }
 
+ const finishSubmit = () => {
+ 
 
+    axios.get('sanctum/csrf-cookie').then(async () =>{
+    axios.post('api/forget-password', inputFields)
+    .then(function (response) {
+       if(response.data.status === 200){
+       
+           Swal.fire({
+             icon: 'success',
+             title: response.data.message,
+             showConfirmButton: false,
+             timer: 2000
+         })
+       }else if(response.data.status === 500){
+        Swal.fire({
+            icon: 'error',
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500
+        })
 
+       }
     
-    const onSubmit = (data, { resetForm }) => {
-        setTimeout(async () => {
-            let details = data;
-            if (details.cpassword !== details.password) {
-                let res = {
-                    altType: "danger",
-                    altMsg: "Password doesn't Match"
-                }
-                console.log(res)
-            }
-
-        }, 2000)
-    }
-
-
+    //    navigate('/dashboard');
+    
+    })
+    .catch(function (error) {
+     Swal.fire({
+         icon: 'error',
+         title: 'An Error Occured!',
+         showConfirmButton: false,
+         timer: 1500
+     })
+    
+    });
+    });
+    
+    };
 
     return (
         <>
@@ -46,23 +89,25 @@ export const ForgotPassword = () => {
                         <img src={logo} className="w-20 mx-auto" alt='img' />
                         <div className='my-6 px-4'>
                             <h2 className='text-4xl font-bold text-center'>Forget password?</h2>
-                            <p className='text-lg font-medium text-center'>Enter your details to receive a rest link</p>
+                            <p className='text-lg font-medium text-center'>A password reset link has been sent to you. Please check your inbox or spam mails.</p>
                         </div>
 
                         <div className='border-2 border-slate-200 mx-2 rounded-xl shadow-lg py-14 px-8 lg:p-14space-y-5'>
                             <div>
-                                <Formik initialValues={intialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
-                                    <Form>
+                            <form onSubmit={handleSubmit}>
+                                   
                                         <div className='space-y-5'>
                                             <div>
                                                 <label className="block text-sm">
-                                                    <Field
+                                                    <input
+                                                     value={inputFields.email}
+                                                     onChange={handleChange}
                                                         type="email"
                                                         name="email"
                                                         className="block w-full mt-1 border p-3  text-base font-medium focus:border-slate-700 focus:outline-none focus:shadow-outline-purple shadow shadow-slate-100 rounded-md"
                                                         placeholder="Enter Email"
                                                     />
-                                                    <ErrorMessage name="email" component="span" className="text-red-500" /> {/*to display the error message for the field*/}
+                                                    <span className='text-red-500'>{errors.email}</span>
                                                 </label>
                                             </div>
 
@@ -71,8 +116,8 @@ export const ForgotPassword = () => {
                                                 <p className='text-center font-bold'> <Link to="/login" className='text-orange-600'><i class="fa-solid fa-arrow-left-long mr-3"></i> Back to sign in</Link></p>
                                             </div>
                                         </div>
-                                    </Form>
-                                </Formik>
+                                   
+                               </form>
                             </div>
                         </div>
 

@@ -5,11 +5,14 @@ import { Theme } from "../../components/dashboard/theme";
 import dp from '../../assets/dp.png'
 import { Activity } from "./activity";
 import { ActiveChats } from "./activeChats";
-
+import { addPointerEvent } from "framer-motion";
+import { data } from "autoprefixer";
+import Swal from 'sweetalert2';
+ import axios from 'axios';
 
 
 export const DashHeader = () => {
-
+    const navigate = useNavigate();
 
 
     const [mobileNav, setMobileNav] = useState(false);
@@ -30,9 +33,52 @@ export const DashHeader = () => {
     }
 
 
-    const navigate = useNavigate()
+    
 
 
+    const logoutSubmit = (e) =>{
+    e.preventDefault();
+
+    axios.get('sanctum/csrf-cookie').then(async () =>{
+        axios.post('api/logout')
+        .then(function (response) {
+           if(response.data.status === 200){
+           
+            localStorage.removeItem('auth_token',response.data.token);
+            localStorage.removeItem('auth_email',response.data.email);
+              
+               
+               Swal.fire({
+                 icon: 'success',
+                 title: response.data.message,
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+           }
+        
+           navigate('/login');
+        
+        })
+        .catch(function (error) {
+         Swal.fire({
+             icon: 'error',
+             title: 'An Error Occured!',
+             showConfirmButton: false,
+             timer: 1500
+         })
+        
+        });
+        });
+    
+
+    }
+
+// var AuthButtons = '';
+// if(!localStorage.getItem('auth_token')){
+//     AuthButtons = (
+
+//     )
+// }
 
 
     return (
@@ -209,7 +255,7 @@ export const DashHeader = () => {
 
 
                                 <div className="">
-                                    <NavLink to="/" onClick={toggleNav} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
+                                    <NavLink onClick={logoutSubmit} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
                                         <svg
                                             className="w-5 h-5"
                                             aria-hidden="true"
@@ -276,14 +322,14 @@ export const DashHeader = () => {
                                     <div className="relative">
                                         <button onClick={toggleProfile} className="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
 
-                                            <img className="object-cover w-8 h-8 rounded-full" src={dp} alt="" aria-hidden="true" />
+                                            <img className="object-cover w-8 h-8 rounded-full" src={localStorage.getItem('profile_picture')} alt={localStorage.getItem('auth_username')} aria-hidden="true" />
 
                                         </button>
                                     </div>
                                 </div>
 
                             </div>
-
+                            
                         </header>
 
                         {/* main display */}

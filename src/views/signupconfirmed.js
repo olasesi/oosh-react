@@ -4,8 +4,13 @@ import { Link } from 'react-router-dom';
 
 
 
-export const CheckEmail = () => {
 
+
+
+
+export const SignupConfirmed = () => {
+
+ 
     return (
         <>
             <main >
@@ -15,15 +20,15 @@ export const CheckEmail = () => {
                         <div className='border-2 border-slate-200  rounded-xl shadow-lg p-14 space-y-5'>
                             <div>
                                 <div className='my-6'>
-                                    <h2 className='text-4xl font-bold text-center'>Check your email</h2>
-                                    <p className='text-lg font-medium text-center'>We have sent a link to your email address: <span className="text-blue-700">{localStorage.getItem('new_registration')}</span> </p>
+                                    <h2 className='text-4xl font-bold text-center'>Email Status</h2>
+                                    <p className='text-lg font-medium text-center'>We have now confirmed your email address, and you can now sign in </p>
                                 </div>
 
                                 <div className='space-y-3'>
                                     <Link to="/login">
-                                        <button className='bg-orange-700 w-full rounded-md text-white py-3 px-8 space-x-4 text-lg font-medium shadow-md shadow-orange-200'>Skip now </button>
+                                        <button className='bg-orange-700 w-full rounded-md text-white py-3 px-8 space-x-4 text-lg font-medium shadow-md shadow-orange-200'>Login now </button>
                                     </Link>
-                                    <p className='text-center font-bold'>Didn’t  receive an email?<Link to="/" className='text-orange-500 mx-4'>Resend</Link></p>
+                                   
 
                                 </div>
                             </div>
