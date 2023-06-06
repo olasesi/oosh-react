@@ -76,9 +76,7 @@ axios.post('api/save-register', inputFields)
   .then(function (response) {
       if(response.data.status === 200){
 
-        //   localStorage.setItem('auth_token',response.data.token);
-        //   localStorage.setItem('auth_firstname',response.data.firstname);
-        //   localStorage.setItem('auth_lastname',response.data.lastname);
+       
           localStorage.setItem('new_registration',response.data.email);
        
           Swal.fire({

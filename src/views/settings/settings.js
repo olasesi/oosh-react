@@ -13,13 +13,12 @@ import { Sharing } from "./sharing";
 
 export const Settings = () => {
 
-
-
     const [active, setActive] = useState("tab1");
 
     const handleChange = (value) => {
         setActive(value);
     };
+
 
 
     return (

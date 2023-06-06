@@ -2,7 +2,7 @@ import './App.css';
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import  SignUp  from './views/signup';
 import Login from './views/login';
@@ -22,6 +22,7 @@ import Media from 'react-media';
 import { Profile } from './views/Profile/profile';
 import { Settings } from './views/settings/settings';
 import { Group } from './views/groups/group';
+import { PagesLists } from './views/pages/pageslists';
 import { Pages } from './views/pages/pages';
 import { Explore } from './views/explore/explore';
 import { Technology } from './views/explore/technology';
@@ -43,7 +44,19 @@ axios.interceptors.request.use(function(config){
 });
 
 function App() {
-  const navigate = useNavigate();
+const navigate = useNavigate();
+
+useEffect(() => {
+  redirectToDashboard()
+}
+, [])
+
+const redirectToDashboard = () => {
+ if(localStorage.getItem('auth_token')) {navigate('dashboard')}
+}
+
+
+
   return (
     <>
 
@@ -54,19 +67,19 @@ function App() {
           matches => matches ? (
             <Routes>
 
-              {/* <Route path="/" element={<SignUp />}></Route>
+            {/* <Route path="/" element={<SignUp />}></Route>
               <Route path="login" element={<Login />}></Route> */}
-            <Route path="/login">
-              {localStorage.getItem('auth_token') ? <Navigate to='dashboard' /> : <Login />}
-            </Route>
-            <Route path="/">
-              {localStorage.getItem('auth_token') ? <Navigate to='dashboard' /> : <SignUp />}
-            </Route>
 
-              <Route path="forgot-password" element={<ForgotPassword />}></Route>
+<Route path="login">{localStorage.getItem('auth_token') ? redirectToDashboard : <Login />}</Route>
+  <Route path="/">{localStorage.getItem('auth_token') ? redirectToDashboard : <SignUp />}</Route> 
+<Route path="forgot-password">{localStorage.getItem('auth_token') ? redirectToDashboard : <ForgotPassword />}</Route> 
+<Route path="check-mail">{localStorage.getItem('auth_token') ? redirectToDashboard : <CheckEmail />}</Route> <Route path="signup-confirmed">{localStorage.getItem('auth_token') ? redirectToDashboard : <SignupConfirmed />}</Route> 
+<Route path="password-reset-form">{localStorage.getItem('auth_token') ? redirectToDashboard : <PasswordResetForm />}</Route> 
+
+              {/* <Route path="forgot-password" element={<ForgotPassword />}></Route>
               <Route path="check-mail" element={<CheckEmail />}></Route>
               <Route path="signup-confirmed" element={<SignupConfirmed />}></Route>
-              <Route path="password-reset-form" element={<PasswordResetForm />}></Route>
+              <Route path="password-reset-form" element={<PasswordResetForm />}></Route> */}
               
               
               <Route path="/dashboard" element={<DashHeader />}>
@@ -78,7 +91,8 @@ function App() {
                 <Route path="settings" element={<Settings />}></Route>
                 <Route path="settings" element={<Settings />}></Route>
                 <Route path="group" element={<Group />}></Route>
-                <Route path="pages" element={<Pages />}></Route>
+                <Route path="pageslists" element={<PagesLists />}></Route>
+                <Route path="pages/:id" element={<Pages />}></Route>
                 <Route path="explore" element={<Explore />}></Route>
                 <Route path="Technology" element={<Technology />}></Route>
                 <Route path="events" element={<Events />}></Route>
@@ -94,15 +108,11 @@ function App() {
           ) : (
 
             <Routes>
- <Route path="/login">
-              {localStorage.getItem('auth_token') ? <Navigate to='/dashboard' /> : <Login />}
-            </Route>
-            <Route path="/">
-              {localStorage.getItem('auth_token') ? <Navigate to='/dashboard' /> : <SignUp />}
-            </Route>
 
-              {/* <Route path="/" element={<SignUp />}></Route>
-              <Route path="login" element={<Login />}></Route> */}
+              <Route path="/" element={<SignUp />}></Route>
+              <Route path="login" element={<Login />}></Route>
+              
+              
               <Route path="forgot-password" element={<ForgotPassword />}></Route>
               <Route path="check-mail" element={<CheckEmail />}></Route>
 
@@ -119,7 +129,8 @@ function App() {
                 <Route path='profile' element={<Profile />}></Route>
                 <Route path="settings" element={<Settings />}></Route>
                 <Route path="group" element={<Group />}></Route>
-                <Route path="pages" element={<Pages />}></Route>
+                <Route path="pageslists" element={<PagesLists />}></Route>
+                <Route path="pages/:id" element={<Pages />}></Route>
                 <Route path="explore" element={<Explore />}></Route>
                 <Route path="Technology" element={<Technology />}></Route>
                 <Route path="events" element={<Events />}></Route>

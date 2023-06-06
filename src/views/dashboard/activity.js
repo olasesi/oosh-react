@@ -7,9 +7,9 @@ import pp3 from '../../assets/3.png'
 import pp4 from '../../assets/4.png'
 import pp5 from '../../assets/5.png'
 import pp6 from '../../assets/6.png'
-import { useState } from 'react'
-
-
+import { useState, useEffect } from 'react'
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export const Activity = () => {
 
@@ -22,6 +22,30 @@ export const Activity = () => {
     }
 
 
+    const  [potentialfriend, setPotentialfriend] = useState([])
+
+    useEffect(() => {
+        axios.get('sanctum/csrf-cookie').then(async () =>{
+            axios.get('api/dashboard-potential-friend')
+            .then(function (response) {
+               if(response.data.status === 200){
+                setPotentialfriend(response.data.potential_friend)
+              
+               }
+            })
+            .catch(function (error) {
+             Swal.fire({
+                 icon: 'error',
+                 title: 'An Error Occured!',
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+            
+            });
+            });
+            
+     }, [])
+
     
 
     return (
@@ -33,20 +57,21 @@ export const Activity = () => {
                     <div className=' border-b pb-2'>
                         <div className='flex justify-between px-4'>
                             <p className='font-medium'>You might </p>
-                            <p className='text-sm text-orange-600 font-semibold'>See all</p>
+                            {potentialfriend ?? <p className='text-sm text-orange-600 font-semibold'>See all</p>}
+                            
                         </div>
                     </div>
 
 
 
-                    <div className="flex px-4 gap-3 items-center">
+                   {potentialfriend ? (<><div className="flex px-4 gap-3 items-center">
                         <div>
-                            <img src={dp} alt="img" className='w-8 rounded-full' />
+                            <img src={"localhost:8000/"+potentialfriend.profile_picture} alt={`${potentialfriend.firstname} ${potentialfriend.lastname} `} title={`${potentialfriend.firstname} ${potentialfriend.lastname} `} className='w-8 rounded-full' />
                         </div>
 
                         <div>
-                            <p className='text-sm font-bold'>Emma</p>
-                            <p className='text-xs'>CEO of 5star</p>
+                            <p className='text-sm font-bold'>{`${potentialfriend.firstname} ${potentialfriend.lastname} `}</p>
+                            <p className='text-xs'>{potentialfriend.occupation}</p>
                         </div>
                     </div>
 
@@ -58,7 +83,9 @@ export const Activity = () => {
                         <div className=''>
                             <button className='bg-orange-600  text-white px-4 2xl:px-6 py-1.5 rounded shadow shadow-orange-200 text-sm'>Connect</button>
                         </div>
-                    </div>
+                    </div></>)
+                   :   <div className=' border-b pb-2'>
+                   <div className='flex justify-between px-4'><p className='text-sm font-bold'>No friends yet</p></div></div>}
                 </section>
 
                 <section className='relative shadow shadow-slate-400 rounded-lg space-y-4 pt-2 pb-4'>
