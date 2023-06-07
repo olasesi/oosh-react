@@ -3,22 +3,29 @@ import React, {useState, useEffect} from 'react';
  import { Link, useNavigate } from 'react-router-dom';
  import Swal from 'sweetalert2';
  import axios from 'axios';
-
+ //import LoadingSpinner from './spinner/LoadingSpinner';
  
 
 export default function SignUp() {
-    const [isLoading, setIsLoading] = useState(false);
+    
 
     const navigate = useNavigate();
 
-    const [inputFields, setInputFields] = useState({firstname:"",lastname:"", email: "", password:"", password_confirmation:"", gender:null, date_of_birth:null});
+    const [inputFields, setInputFields] = useState({
+        firstname:"",
+        lastname:"", 
+        email: "", 
+        password:"", 
+        password_confirmation:"", 
+        gender:null, 
+        date_of_birth:null});
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
 
     const handleChange = (e) =>{
-        const{name , value} = e.target;
+        const{name, value} = e.target;
         setInputFields({...inputFields, [name]: value});  
-        //Fix what gender and date here. It should fill it up also
+       
     }
 
     const validate =(inputValues)=>{
@@ -63,17 +70,15 @@ const handleSubmit = (e) => {
 
  const finishSubmit = () => {
     
-setIsLoading(true);
+
 axios.get('sanctum/csrf-cookie').then(async () =>{
 axios.post('api/save-register', inputFields)
   .then(function (response) {
       if(response.data.status === 200){
 
-        //   localStorage.setItem('auth_token',response.data.token);
-        //   localStorage.setItem('auth_firstname',response.data.firstname);
-        //   localStorage.setItem('auth_lastname',response.data.lastname);
+       
           localStorage.setItem('new_registration',response.data.email);
-          setIsLoading(false)
+       
           Swal.fire({
             icon: 'success',
             title: response.data.message,
@@ -82,12 +87,19 @@ axios.post('api/save-register', inputFields)
         })
 
         navigate('check-mail');
-      }
+      }else if(response.data.status === 500){
+        Swal.fire({
+            icon: 'error',
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500
+        })
+       }
    
   
   })
   .catch(function (error) {
-    setIsLoading(false);
+    
     Swal.fire({
         icon: 'error',
         title: 'An Error Occured!',
@@ -214,6 +226,7 @@ axios.post('api/save-register', inputFields)
                                                  <div className='w-full lg:w-1/2'>
                                                      <label className="block text-sm">
                                                          <input
+                                                         onChange={handleChange}
                                                              type="date"
                                                              name="date_of_birth"
                                                              className="block w-full mt-1 border p-3  text-base font-medium focus:border-slate-700 focus:outline-none focus:shadow-outline-purple shadow shadow-slate-100 rounded-md"
@@ -226,13 +239,15 @@ axios.post('api/save-register', inputFields)
                                                  <div className='w-full lg:w-1/2'>
                                                      <label className="block text-sm">
                                                          <select
+                                                         onChange={handleChange}
                                                              as="select"
                                                              type="text"
                                                              name="gender"
                                                              className="block w-full mt-1 border p-3  text-base font-medium focus:border-slate-700 focus:outline-none focus:shadow-outline-purple shadow shadow-slate-100 rounded-md">
                                                              <option selected >Select gender</option>
-                                                             <option value="Male">Male</option>
-                                                             <option value="Female">Female</option>
+                                                             
+                                                            <option>Male</option>
+                                                             <option>Female</option>
                                                          </select>
                                                          
                                                      </label>

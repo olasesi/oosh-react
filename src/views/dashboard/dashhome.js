@@ -7,11 +7,12 @@ import { Activity } from "./activity";
 import { ActiveChats } from "./activeChats";
 import { addPointerEvent } from "framer-motion";
 import { data } from "autoprefixer";
-
+import Swal from 'sweetalert2';
+ import axios from 'axios';
 
 
 export const DashHeader = () => {
-
+    const navigate = useNavigate();
 
 
     const [mobileNav, setMobileNav] = useState(false);
@@ -31,17 +32,67 @@ export const DashHeader = () => {
         setShowProfile(!showProfile)
     }
 
+    const  [profile, setProfile] = useState([])
+    const  [loading, setLoading] = useState(false)
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        axios.get('sanctum/csrf-cookie').then(async () =>{
+            axios.get('api/dashboard-header')
+            .then(function (response) {
+               if(response.data.status === 200){
 
+                setProfile(response.data.profile_picture)
+              setLoading(true)
+               }
+            })
+            .catch(function (error) {
+             Swal.fire({
+                 icon: 'error',
+                 title: 'An Error Occured!',
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+            
+            });
+            });
+            
+     }, [])
+ 
 
     const logoutSubmit = (e) =>{
     e.preventDefault();
 
-    // Get to the API to delete
-    // and then you remove the localstore data
-    // localStorage.removeItem('and the name of the item')
-    // and then redirect
+    axios.get('sanctum/csrf-cookie').then(async () =>{
+        axios.post('api/logout')
+        .then(function (response) {
+           if(response.data.status === 200){
+           
+            localStorage.removeItem('auth_token',response.data.token);
+            localStorage.removeItem('auth_email',response.data.email);
+              
+               
+               Swal.fire({
+                 icon: 'success',
+                 title: response.data.message,
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+           }
+        
+           navigate('/login');
+        
+        })
+        .catch(function (error) {
+         Swal.fire({
+             icon: 'error',
+             title: 'An Error Occured!',
+             showConfirmButton: false,
+             timer: 1500
+         })
+        
+        });
+        });
+    
 
     }
 
@@ -92,7 +143,7 @@ export const DashHeader = () => {
                                 </div>
 
                                 <div className="relative">
-                                    <NavLink to="pages" onClick={toggleNav} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
+                                    <NavLink to="pageslists" onClick={toggleNav} className={({ isActive }) => (isActive ? "text-white bg-orange-600 font-medium inline-flex w-full text-sm md:text-base md:font-semibold transition-colors duration-150 px-6 py-3 rounded-tr-2xl rounded-br-2xl" : "px-6 py-3 inline-flex font-medium items-center w-full md:text-base md:font-semibold text-gray-500 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-500")}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 18V8.25m-18 0V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v2.25m-18 0h18M5.25 6h.008v.008H5.25V6zM7.5 6h.008v.008H7.5V6zm2.25 0h.008v.008H9.75V6z" />
                                         </svg>
@@ -294,8 +345,8 @@ export const DashHeader = () => {
                                     <div className="relative">
                                         <button onClick={toggleProfile} className="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
 
-                                            <img className="object-cover w-8 h-8 rounded-full" src={localStorage.getItem('profile_picture')} alt={localStorage.getItem('auth_username')} aria-hidden="true" />
-
+                                         {loading && (<img className="object-cover w-8 h-8 rounded-full" src={"http://localhost:8000/"+profile.profile_picture} alt={`${profile.firstname} ${profile.lastname}`} title={`${profile.firstname} ${profile.lastname}`} aria-hidden="true" />)}
+                                           
                                         </button>
                                     </div>
                                 </div>

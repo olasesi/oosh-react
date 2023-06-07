@@ -13,26 +13,46 @@ import pp3 from '../../assets/3.png'
 import pp4 from '../../assets/4.png'
 import pp5 from '../../assets/5.png'
 import pp6 from '../../assets/6.png'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CreatePost } from '../../components/dashboard/createpost'
 import { Stories } from './stories/stories'
+import Swal from 'sweetalert2';
+ import axios from 'axios';
 
 
 
 export const Feeds = () => {
 
-
     const [showCreatePst, setShowCreatePst] = useState(false);
-
-
+    const [profilePicture, setProfilePicture] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const showCreatePost = () => {
         setShowCreatePst(!showCreatePst)
     }
 
 
-
-
+    useEffect(() => {
+        axios.get('sanctum/csrf-cookie').then(async () =>{
+            axios.get('api/dashboard-image-profile')
+            .then(function (response) {
+               if(response.data.status === 200){
+                setProfilePicture(response.data.profile_picture)
+              setLoading(true)
+               }
+            })
+            .catch(function (error) {
+             Swal.fire({
+                 icon: 'error',
+                 title: 'An Error Occured!',
+                 showConfirmButton: false,
+                 timer: 1500
+             })
+            
+            });
+            });
+            
+     }, [])
 
     return (
         <>
@@ -41,9 +61,12 @@ export const Feeds = () => {
 
             <section className='space-y-6'>
                 <section className=' shadow shadow-slate-400 rounded-lg py-4  px-4 md:px-6 2xl:px-8 space-y-4'>
+
+                  
+
                     <div className="flex space-x-6 items-center justify-center">
                         <div>
-                            <img src={dp} alt="img" className='w-12 rounded-full' />
+                          {loading && <img src={"http://localhost:8000/"+profilePicture.profile_picture} alt={` ${profilePicture.firstname} ${profilePicture.lastname}`} title={`${profilePicture.firstname} ${profilePicture.lastname}`} className='w-12 rounded-full' />}
                         </div>
 
                         <div className='flex-1'>
@@ -82,6 +105,8 @@ export const Feeds = () => {
                             <button className='bg-orange-600 text-white px-3 py-1 rounded'>Post</button>
                         </div>
                     </div>
+
+                    
                     {showCreatePst && (
                         <CreatePost showCreatePost={showCreatePost} />
                     )
