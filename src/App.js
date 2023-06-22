@@ -2,7 +2,7 @@ import './App.css';
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import React, { useEffect } from 'react'
+import React, { useEffect, Suspense } from 'react'
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import  SignUp  from './views/signup';
 import Login from './views/login';
@@ -67,8 +67,7 @@ const redirectToDashboard = () => {
           matches => matches ? (
             <Routes>
 
-            {/* <Route path="/" element={<SignUp />}></Route>
-              <Route path="login" element={<Login />}></Route> */}
+           
 
 <Route path="login">{localStorage.getItem('auth_token') ? redirectToDashboard : <Login />}</Route>
   <Route path="/">{localStorage.getItem('auth_token') ? redirectToDashboard : <SignUp />}</Route> 
@@ -83,7 +82,7 @@ const redirectToDashboard = () => {
               
               
               <Route path="/dashboard" element={<DashHeader />}>
-                <Route index element={<Dashboard />}></Route>
+              <Route index element={<Dashboard />}></Route>
                 <Route path="notification" element={<Notification />}></Route>
                 <Route path="message" element={<MessageHome />}></Route>
                 <Route path="pmessage" element={<ChatSection />}></Route>
@@ -103,6 +102,7 @@ const redirectToDashboard = () => {
               </Route>
 
               <Route path="*" element={<Errorpage />}></Route>
+              
             </Routes>
 
           ) : (
