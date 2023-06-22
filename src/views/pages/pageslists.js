@@ -52,16 +52,26 @@ export const PagesLists = () => {
         setEditProfile(!editProfile)
     }
 
+   
     if (loading) {
       return <div className="loader">Loading...</div>
     }
-  
+    
     console.log(listdata) 
     return (
         <>
         
-        <div className='space-y-3 mb-3'>
+        <div className='space-y-3 mb-3 inline-grid grid-cols-2 gap-1 '>
                 <button onClick={showEditProfile} className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-black'>Create Page <i className="fa-solid fa-plus ml-2"></i></button>
+        </div>
+        <div className='space-y-3 mb-3 inline-grid grid-cols-2 gap-1'>
+                <button onClick={showEditProfile} className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-black'>Discover <i class="fas fa-search-plus"></i></button>
+        </div>
+        <div className='space-y-3 mb-3 inline-grid grid-cols-2 gap-1'>
+                <button onClick={showEditProfile} className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-black'>Liked Pages <i class="fa-sharp fa-solid fa-thumbs-up"></i></button>
+        </div>
+        <div className='space-y-3 mb-3 inline-grid grid-cols-2 gap-1'>
+                <button onClick={showEditProfile} className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-black'>Invitations <i class="fa-solid fa-restroom"></i></button>
         </div>
 
         <h1 className='font-semibold text-4xl mb-7'>My pages</h1>
